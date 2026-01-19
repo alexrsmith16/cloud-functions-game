@@ -1,0 +1,44 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Source files (only deploy built artifacts)
+*.ts
+!*.d.ts
+src/
+**/src/
+
+# Build artifacts (keep dist for deployment)
+# dist/ - commented out, we may want to deploy dist
+
+# Development files
+.git/
+.gitignore
+.gcloudignore
+*.md
+README.md
+
+# IDE
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Testing
+test/
+tests/
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
