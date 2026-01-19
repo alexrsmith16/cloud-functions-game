@@ -1,0 +1,51 @@
+steps:
+  # Install dependencies from root to set up npm workspaces
+  # This creates the workspace links so @game/shared can be resolved
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+    dir: '.'
+    
+  # Build the shared package first (required dependency)
+  # This must happen before building server/functions
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build:shared']
+    dir: '.'
+    
+  # Build the server/functions package
+  # This will now be able to resolve @game/shared from the workspace
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build:backend']
+    dir: '.'
+    
+  # Deploy Cloud Functions
+  # For Gen2 Functions (recommended):
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'functions'
+      - 'deploy'
+      - 'healthCheck'
+      - '--gen2'
+      - '--runtime=nodejs20'
+      - '--region=us-central1'
+      - '--source=./server/functions'
+      - '--entry-point=healthCheck'
+      - '--trigger-http'
+      - '--allow-unauthenticated'
+  
+  # Alternative: For Gen1 Functions, use this instead:
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   entrypoint: gcloud
+  #   args:
+  #     - 'functions'
+  #     - 'deploy'
+  #     - 'healthCheck'
+  #     - '--runtime=nodejs20'
+  #     - '--region=us-central1'
+  #     - '--source=./server/functions'
+  #     - '--entry-point=healthCheck'
+  #     - '--trigger-http'
+  #     - '--allow-unauthenticated'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
