@@ -7,9 +7,12 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "moduleResolution": "node",
-    "composite": true
+    "composite": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": "."
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../shared" }

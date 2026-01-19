@@ -4,15 +4,15 @@
   "private": true,
   "description": "TypeScript monorepo for Google Cloud web game project",
   "workspaces": [
-    "frontend",
-    "backend/functions",
+    "client",
+    "server/functions",
     "shared"
   ],
   "scripts": {
     "install:all": "npm install",
     "build": "npm run build --workspaces --if-present",
-    "build:frontend": "npm run build --workspace=frontend",
-    "build:backend": "npm run build --workspace=backend/functions",
+    "build:frontend": "npm run build --workspace=client",
+    "build:backend": "npm run build --workspace=server/functions",
     "build:shared": "npm run build --workspace=shared",
     "clean": "npm run clean --workspaces --if-present"
   },
