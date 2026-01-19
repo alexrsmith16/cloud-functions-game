@@ -1,6 +1,6 @@
 steps:
   # Install dependencies from root to set up npm workspaces
-  # This creates the workspace links so @game/shared can be resolved
+  # This creates the workspace links so @game/shared can be resolved during build
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
     dir: '.'
@@ -16,6 +16,29 @@ steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'build:backend']
     dir: '.'
+    
+  # Package the shared dependency as a tarball
+  # This creates a .tgz file that can be installed as a local dependency
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['pack']
+    dir: './shared'
+    
+  # Copy tarball to server/functions and install it to update package.json
+  # This replaces the workspace dependency (*) with a file: reference
+  # so Cloud Functions deployment can resolve @game/shared when it runs npm install
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Find the tarball (npm pack creates game-shared-0.0.1.tgz for @game/shared)
+        TARBALL=$(ls shared/*.tgz | head -1)
+        TARBALL_NAME=$(basename "$TARBALL")
+        cp "$TARBALL" server/functions/
+        
+        # Install the tarball - this will update package.json to use file: reference
+        cd server/functions
+        npm install --save "./$TARBALL_NAME"
     
   # Deploy Cloud Functions
   # For Gen2 Functions (recommended):
